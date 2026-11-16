@@ -1,0 +1,3 @@
+import { env } from "cloudflare:workers";
+import { requireAuth, unauthorized } from "../../../../lib/auth";
+export async function GET(request:Request){if(!await requireAuth(request))return unauthorized();const roles=await env.DB.prepare("SELECT r.id,r.name,r.description,r.status,COUNT(rp.permission_id) AS permission_count FROM roles r LEFT JOIN role_permissions rp ON rp.role_id=r.id GROUP BY r.id ORDER BY r.name").all();const permissions=await env.DB.prepare("SELECT id,name,description FROM permissions ORDER BY name").all();return Response.json({roles:roles.results,permissions:permissions.results});}

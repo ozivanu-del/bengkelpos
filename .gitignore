@@ -1,0 +1,8 @@
+/dist/
+.vinext/
+.cloudflare/
+.wrangler/
+node_modules/
+.next/
+__pycache__/
+*.pyc

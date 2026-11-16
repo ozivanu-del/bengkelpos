@@ -1,0 +1,3 @@
+import { env } from "cloudflare:workers";
+import { requireAuth, unauthorized } from "../../../../lib/auth";
+export async function PATCH(request:Request,context:{params:Promise<{id:string}>}){if(!await requireAuth(request))return unauthorized();const{id}=await context.params;const b=await request.json() as {name?:string;description?:string;status?:string};await env.DB.prepare("UPDATE category_types SET name=COALESCE(?,name),description=COALESCE(?,description),status=COALESCE(?,status),updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(b.name??null,b.description??null,b.status??null,id).run();return Response.json({message:'Kategori diperbarui'});}

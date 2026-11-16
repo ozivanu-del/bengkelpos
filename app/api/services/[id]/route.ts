@@ -1,0 +1,3 @@
+import { env } from "cloudflare:workers";
+import { requireAuth, unauthorized } from "../../../../lib/auth";
+export async function PATCH(request:Request,context:{params:Promise<{id:string}>}){if(!await requireAuth(request))return unauthorized();const{id}=await context.params;const b=await request.json() as Record<string,unknown>;const fields=['code','name','category_id','price','estimated_minutes','status'];const updates=fields.filter(k=>b[k]!==undefined);if(!updates.length)return Response.json({error:'Tidak ada perubahan'},{status:422});await env.DB.prepare(`UPDATE services SET ${updates.map(k=>`${k}=?`).join(',')},updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(...updates.map(k=>b[k]),id).run();return Response.json({message:'Jasa diperbarui'});}
